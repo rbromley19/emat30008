@@ -58,25 +58,25 @@ def solve_ode(f, x0, t, method, dt_max, true_sol):
     return np.array(x)
 
 
-def error_plot(f, x0, t, dt_max, true_sol):
+def error_plot(f, x0, t, true_sol):
     h_val = np.logspace(-4, -1, 50)
     euler_list = np.zeros(int(len(h_val)))
     rk4_list = np.zeros(int(len(h_val)))
 
     for i in range(len(h_val)):
-        euler_sol = solve_ode(f, x0, t, 'euler', dt_max, true_sol)
+        euler_sol = solve_ode(f, x0, t, 'euler', h_val[i], true_sol)
         final = euler_sol[-1]
         error = abs(final - true_sol)
         euler_list[i] = error
 
     for i in range(len(h_val)):
-        rk4_sol = solve_ode(f, x0, t, 'rk4', dt_max, true_sol)
+        rk4_sol = solve_ode(f, x0, t, 'rk4', h_val[i], true_sol)
         final = rk4_sol[-1]
         error = abs(final - true_sol)
         rk4_list[i] = error
 
-    print(rk4_list)
-    print(euler_list)
+    # print(rk4_list)
+    # print(euler_list)
     ax = plt.gca()
     ax.scatter(h_val, euler_list)
     ax.scatter(h_val, rk4_list)
@@ -105,4 +105,5 @@ def rk4_one(f, t, true_sol):
 euler_one(f, t, true_sol)
 rk4_one(f, t, true_sol)
 
-error_plot(f, 1, t, 0.01, true_sol)
+t_lim = [0, 1]
+error_plot(f, 1, t_lim, true_sol)
