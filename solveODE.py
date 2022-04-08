@@ -7,14 +7,8 @@ def f(t, x):
     return x
 
 
-def f_s(t, X):
-    x, y = X
-    xdot = y
-    ydot = -x
-    return [xdot, ydot]
-
-
-t = np.linspace(0, 1, 100)
+# t = np.linspace(0, 1, 100)
+t = [0, 1]
 true_sol = math.e
 
 
@@ -50,7 +44,8 @@ def solve_to(method, f, x1, t1, t2, dt_max):
 
 
 def solve_ode(f, x0, t, method, dt_max, true_sol):
-    x = np.zeros(len(t))
+    # x = np.zeros(len(t))
+    x = np.zeros((len(t), len(x0)))
     x[0] = x0
 
     for i in range(1, len(t)):
@@ -65,14 +60,12 @@ def error_plot(f, x0, t, true_sol):
 
     for i in range(len(h_val)):
         euler_sol = solve_ode(f, x0, t, 'euler', h_val[i], true_sol)
-        final = euler_sol[-1]
-        error = abs(final - true_sol)
+        error = abs(euler_sol[-1] - true_sol)
         euler_list[i] = error
 
     for i in range(len(h_val)):
         rk4_sol = solve_ode(f, x0, t, 'rk4', h_val[i], true_sol)
-        final = rk4_sol[-1]
-        error = abs(final - true_sol)
+        error = abs(rk4_sol[-1] - true_sol)
         rk4_list[i] = error
 
     # print(rk4_list)
@@ -86,24 +79,63 @@ def error_plot(f, x0, t, true_sol):
     plt.show()
 
 
-def euler_one(f, t, true_sol):
+def euler_run(f, t, true_sol):
     method = 'euler'
-    x0 = 1
+    x0 = [1]
     dt_max = 0.01
     euler = solve_ode(f, x0, t, method, dt_max, true_sol)[-1]
     print('Euler approximation = ' + str(euler))
 
 
-def rk4_one(f, t, true_sol):
+def rk4_run(f, t, true_sol):
     method = 'rk4'
-    x0 = 1
+    x0 = [1]
     dt_max = 0.01
     rk4 = solve_ode(f, x0, t, method, dt_max, true_sol)[-1]
     print('Runge-kutta approximation = ' + str(rk4))
 
 
-euler_one(f, t, true_sol)
-rk4_one(f, t, true_sol)
+euler_run(f, t, true_sol)
+rk4_run(f, t, true_sol)
 
 t_lim = [0, 1]
-error_plot(f, 1, t_lim, true_sol)
+error_plot(f, [1], t_lim, true_sol)
+
+t = np.linspace(0, 1, 100)
+
+
+def f_s(t, X):
+    x = X[0]
+    y = X[1]
+    xdot = y
+    ydot = -x
+    return [xdot, ydot]
+
+
+x0 = [1, 0]
+t = np.linspace(0, 20, 100)
+eul_sol = solve_ode(f_s, x0, t, 'euler', 0.001, true_sol)
+rk4_sol = solve_ode(f_s, x0, t, 'rk4', 0.001, true_sol)
+xeul = eul_sol[:, 0]
+xeuldot = eul_sol[:, 1]
+xrk4 = rk4_sol[:, 0]
+xrk4dot = rk4_sol[:, 1]
+
+
+def X_analytic(t, X0):
+    c2, c1 = X0
+
+    return [c1 * np.sin(t) + c2 * np.cos(t), c1 * np.cos(t) - c2 * np.sin(t)]
+
+
+x_analytic, xdot_analytic = X_analytic(t, x0)
+
+plt.plot(t, xeul, t, xrk4, t, x_analytic)
+plt.xlabel('time, t')
+plt.ylabel('x')
+plt.show()
+
+plt.plot(xeuldot, xeul, xrk4dot, xrk4)
+plt.xlabel('xdot')
+plt.ylabel('x')
+plt.show()
