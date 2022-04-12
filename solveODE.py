@@ -8,8 +8,9 @@ def f(t, x):
 
 
 # t = np.linspace(0, 1, 100)
-t = [0, 1]
 true_sol = math.e
+
+t = [0, 1]
 
 
 def euler_step(f, x0, t0, h):
@@ -43,7 +44,7 @@ def solve_to(method, f, x1, t1, t2, dt_max):
     return x1
 
 
-def solve_ode(f, x0, t, method, dt_max, true_sol):
+def solve_ode(f, x0, t, method, dt_max):
     # x = np.zeros(len(t))
     x = np.zeros((len(t), len(x0)))
     x[0] = x0
@@ -59,12 +60,12 @@ def error_plot(f, x0, t, true_sol):
     rk4_list = np.zeros(int(len(h_val)))
 
     for i in range(len(h_val)):
-        euler_sol = solve_ode(f, x0, t, 'euler', h_val[i], true_sol)
+        euler_sol = solve_ode(f, x0, t, 'euler', h_val[i])
         error = abs(euler_sol[-1] - true_sol)
         euler_list[i] = error
 
     for i in range(len(h_val)):
-        rk4_sol = solve_ode(f, x0, t, 'rk4', h_val[i], true_sol)
+        rk4_sol = solve_ode(f, x0, t, 'rk4', h_val[i])
         error = abs(rk4_sol[-1] - true_sol)
         rk4_list[i] = error
 
@@ -83,7 +84,7 @@ def euler_run(f, t, true_sol):
     method = 'euler'
     x0 = [1]
     dt_max = 0.01
-    euler = solve_ode(f, x0, t, method, dt_max, true_sol)[-1]
+    euler = solve_ode(f, x0, t, method, dt_max)[-1]
     print('Euler approximation = ' + str(euler))
 
 
@@ -91,7 +92,7 @@ def rk4_run(f, t, true_sol):
     method = 'rk4'
     x0 = [1]
     dt_max = 0.01
-    rk4 = solve_ode(f, x0, t, method, dt_max, true_sol)[-1]
+    rk4 = solve_ode(f, x0, t, method, dt_max)[-1]
     print('Runge-kutta approximation = ' + str(rk4))
 
 
@@ -109,13 +110,13 @@ def f_s(t, X):
     y = X[1]
     xdot = y
     ydot = -x
-    return [xdot, ydot]
+    return np.array((xdot, ydot))
 
 
 x0 = [1, 0]
 t = np.linspace(0, 20, 100)
-eul_sol = solve_ode(f_s, x0, t, 'euler', 0.001, true_sol)
-rk4_sol = solve_ode(f_s, x0, t, 'rk4', 0.001, true_sol)
+eul_sol = solve_ode(f_s, x0, t, 'euler', 0.001)
+rk4_sol = solve_ode(f_s, x0, t, 'rk4', 0.001)
 xeul = eul_sol[:, 0]
 xeuldot = eul_sol[:, 1]
 xrk4 = rk4_sol[:, 0]
