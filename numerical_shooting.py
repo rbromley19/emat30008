@@ -3,9 +3,11 @@ import numpy as np
 from predator_prey import pred_prey
 from scipy.optimize import fsolve
 
+T = [t0, T]
 
-def G(f, u0, t0, T):
-    sol = solveODE.solve_ode(f, u0, [t0, T], 'rk4', 0.01)
+
+def G(f, u0, T):
+    sol = solveODE.solve_ode(f, u0, T, 'rk4', 0.01)
     return sol[:, -1]
 
 
