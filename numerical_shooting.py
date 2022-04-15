@@ -60,11 +60,16 @@ def orbit_calc(f, u0, T, var):
 def plot_shoot(f, u0, T):
     t = np.linspace(0, T, 101)
     sol = solve_ode(f, u0, t, 'rk4', 0.01)
-    print(sol)
     x = sol[:, 0]
     y = sol[:, 1]
     plt.plot(x, y)
     plt.show()
 
 
-orbit_calc(pred_prey, [0.25, 0.35], 21, 1)
+if __name__ == '__main__':
+    f = pred_prey
+    u0 = [0.25, 0.35]
+    T = 21
+    var = 1
+    orbit_calc(f, u0, T, var)
+
