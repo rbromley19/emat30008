@@ -32,7 +32,6 @@ def hopf_test(b, u0, T0, phase0, t):
 
 
 if __name__ == '__main__':
-    # First test conditions
     b = 1
     u0 = [1, 1.5]
     T0 = 5
