@@ -2,19 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
 from matplotlib import pyplot
-from solveODE import solve_ode
+from integrate_ode import solve_ode
 from scipy.optimize import root
 from math import nan
-
-
-def pred_prey(t, u, b):
-    a = 1
-    d = 0.1
-    b = 0.2
-    x, y = u
-    dx = x * (1 - x) - (a * x * y) / (d + x)
-    dy = b * y * (1 - (y / x))
-    return np.array((dx, dy))
+from ode_functions import pred_prey
 
 b = 0.2
 int = [0.25, 0.25]
