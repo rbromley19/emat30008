@@ -21,18 +21,19 @@ var : integer
 Returns
 -------
 u0 : array
-    Initial conditions of orbit
+    Initial conditions of orbis
 T  : float
     Time period of orbit
 """
-
-    shoot = lambda U, f: num_shoot(U, f, var)
-    orbit = fsolve(shoot, [u0[0], u0[1], T], f)
-    print(orbit)
-    u0 = orbit[:-1]
+    if len(u0) > 2:
+        print('here')
+        U0 = np.concatenate((u0, [T]))
+    else:
+        U0 = np.array([u0[0], u0[-1], T])
+    orbit = fsolve(lambda U, f: num_shoot(U, f, var), U0, f)
+    # orbit = fsolve(lambda U, f: num_shoot(U, f, var), [u0[0], u0[-1], T], f)
     T = orbit[-1]
-    print(u0)
-    print(T)
+    u0 = orbit[:-1]
     return u0, T
 
 
@@ -54,16 +55,11 @@ Returns
 g : array
     System of equations of the boundary value problem to be solved
 """
-
-    print('U: ' + str(type(U)))
-    print('f: ' + str(type(f)))
-    print('var: ' + str(type(var)))
     u0 = U[:-1]
     T = U[-1]
     G_sol = u0 - G(f, u0, 0, T)
     phase = conditions(f, u0, var)
     g = np.concatenate((G_sol, phase))
-    print('g: ' + str(type(g)))
     return g
 
 
@@ -87,7 +83,6 @@ Returns
 sol[-1] : array
          Solution of ODE
 """
-
     sol = solve_ode(f, u0, [t0, T], 'rk4', 0.01)
     return sol[-1]
 
