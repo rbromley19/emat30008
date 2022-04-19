@@ -22,7 +22,7 @@ def X_analytic(t, X0):
 
 
 # Function to simulate predator-prey equations
-def pred_prey(t, u, b):
+def predator_prey(t, u, b):
     a = 1
     d = 0.1
     b = 0.2
@@ -63,3 +63,20 @@ def ode_3_exp(t, theta, b):
     u2 = np.sqrt(b) * np.sin(t + theta)
     u3 = np.exp(-(t + theta))
     return np.array([u1, u2, u3])
+
+
+def cubic(x, c):
+    return x ** 3 - x + c
+
+
+def hopf_normal(t, u, b):
+    u1, u2 = u
+    du1 = b * u1 - u2 - u1 * (u1 ** 2 + u2 ** 2)
+    du2 = u1 + b * u2 - u2 * (u1 ** 2 + u2 ** 2)
+    return np.array([du1, du2])
+
+
+def hopf_mod(t, u, b):
+    u1, u2 = u
+    du1 = b * u1 - u2 + u1 * (u1 ** 2 + u2 ** 2) - u1 * (u1 ** 2 + u2 ** 2) ** 2
+    du2 = u1 + b * u2 + u2 * (u1 ** 2 + u2 ** 2) - u2 * (u1 ** 2 + u2 ** 2) ** 2
