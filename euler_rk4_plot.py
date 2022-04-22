@@ -17,11 +17,9 @@ def error_plot(f, x0, t, true_sol, methods):
             print(error)
         ax = plt.gca()
         ax.scatter(h_val, method_list)
-        ax.legend(methods[method])
-        # ax.legend([methods[method]],
+    ax.legend(methods, loc='best')
     ax.set_yscale('log')
     ax.set_xscale('log')
-        # ax.legend(['Euler', 'RK4'], loc='best')
     plt.show()
 
 
