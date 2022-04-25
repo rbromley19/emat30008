@@ -2,6 +2,7 @@ from integrate_ode import solve_ode
 import numpy as np
 from scipy.optimize import fsolve
 from ode_functions import predator_prey
+import matplotlib.pyplot as plt
 
 
 def orbit_calc(f, u0, T, var):
@@ -25,13 +26,9 @@ u0 : array
 T  : float
     Time period of orbit
 """
-    if len(u0) > 2:
-        print('here')
-        U0 = np.concatenate((u0, [T]))
-    else:
-        U0 = np.array([u0[0], u0[-1], T])
+
+    U0 = np.append(u0, T)
     orbit = fsolve(lambda U, f: num_shoot(U, f, var), U0, f)
-    # orbit = fsolve(lambda U, f: num_shoot(U, f, var), [u0[0], u0[-1], T], f)
     T = orbit[-1]
     u0 = orbit[:-1]
     return u0, T
@@ -55,11 +52,12 @@ Returns
 g : array
     System of equations of the boundary value problem to be solved
 """
+
     u0 = U[:-1]
     T = U[-1]
-    G_sol = u0 - G(f, u0, 0, T)
+    G_sol = abs(u0 - G(f, u0, 0, T))
     phase = conditions(f, u0, var)
-    g = np.concatenate((G_sol, phase))
+    g = np.append((G_sol), phase)
     return g
 
 
@@ -83,8 +81,9 @@ Returns
 sol[-1] : array
          Solution of ODE
 """
+
     sol = solve_ode(f, u0, [t0, T], 'rk4', 0.01)
-    return sol[-1]
+    return np.array(sol[-1])
 
 
 # Function to calculate phase condition using d[var]/dt(0) of a system of odes f
@@ -105,12 +104,27 @@ Returns
 phase_cond : array
             Phase condition for shooting
 """
+
     phase_cond = np.array([f(0, u0)[var]])
     return phase_cond
 
 
 if __name__ == '__main__':
     u0 = [0.2, 0.3]
-    T = 20
+    T = 22
     var = 0
-    orbit_calc(lambda t, u: predator_prey(t, u, b=0.2), u0, T, var)
+    u0, T = orbit_calc(lambda t, u: predator_prey(t, u, b=0.2), u0, T, var)
+    # print(u0, T)
+    # u0 = [0.2, 0.3]
+    # T = 22
+    # var = 0
+    # sol = orbit_calc(lambda t, u: predator_prey(t, u, b=0.25), u0, T, var)
+    print(u0, T)
+    t = np.linspace(0, T, 101)
+    sol = solve_ode(lambda t, u: predator_prey(t, u, b=0.25), u0, t, 'rk4', 0.01)
+    t = np.linspace(0, T, 101)
+    print(sol)
+    x = sol[:, 0]
+    y = sol[:, 1]
+    plt.plot(x, y)
+    plt.show()
