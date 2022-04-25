@@ -3,7 +3,7 @@ import numpy as np
 from scipy.optimize import fsolve
 
 
-def param_continuation(f, x0, param0, a, b, space, discretisation, solver):
+def natural_continuation(f, x0, param0, a, b, space, discretisation, solver):
 
     params = np.linspace(a, b, space)
     sol_array = []
@@ -17,6 +17,12 @@ def param_continuation(f, x0, param0, a, b, space, discretisation, solver):
     return params, sol_array
 
 
-if __name__ == '__main__':
-    params, sol_array = param_continuation(cubic, 1.5, 2, -2, 2, 101, lambda x: x, fsolve)
+def cubic_natural():
+    params, sol_array = natural_continuation(cubic, 1.5, 2, -2, 2, 101, lambda x: x, fsolve)
     print(params, sol_array)
+
+def hopf_natural():
+    # params, sol_array = param_continuation(hopf_normal, )
+
+if __name__ == '__main__':
+    cubic_natural()
