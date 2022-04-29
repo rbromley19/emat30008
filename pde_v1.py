@@ -50,7 +50,7 @@ def solve_PDE(u_I, kappa, L, T, mx, mt, method):
         print(A_FE)
     elif method == 'bw':
         diagonals = [[- lmbda] * (mx - 1), [1 + 2 * lmbda] * mx, [- lmbda] * (mx - 1)]
-        A_BE = scipy.sparse.diags(diagonals, [-1, 0, 11], format='csc')
+        A_BE = scipy.sparse.diags(diagonals, [-1, 0, 1], format='csc')
     elif method == 'CN':
         diagonals = [[-lmbda / 2] * (mx - 1), [1 + lmbda] * mx, [-lmbda / 2] * (mx - 1)]
         A_CN = scipy.sparse.diags(diagonals, [-1, 0, 1], format='csc')
@@ -70,7 +70,7 @@ def solve_PDE(u_I, kappa, L, T, mx, mt, method):
         # Forward Euler timestep at inner mesh points
         # PDE discretised at position x[i], time t[j]
         if method == 'fw':
-            u_jp1[1:] = A_FE * u_j[1:]
+            u_jp1[1:] = np.dot(A_FE, u_j[1:])
         elif method == 'bw':
             u_jp1[1:] = spsolve(A_BE, u_j[1:])
         elif method == 'CN':
@@ -90,4 +90,7 @@ def solve_PDE(u_I, kappa, L, T, mx, mt, method):
     pl.xlabel('x')
     pl.ylabel('u(x,0.5)')
     pl.legend(loc='upper right')
-    pl.show
+    pl.show()
+
+
+solve_PDE(u_I, 1, 1, 0.5, 10, 1000, 'fw')
