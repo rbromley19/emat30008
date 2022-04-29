@@ -56,7 +56,13 @@ def solve_PDE(u_I, kappa, L, T, mx, mt, method):
     for j in range(0, mt):
         # Forward Euler timestep at inner mesh points
         # PDE discretised at position x[i], time t[j]
-        method(lmbda, mx, u_j, u_jp1)
+        # Check input method is valid, execute if so
+        methods = {'fw': fw, 'bw': bw, 'ck': ck}
+        method_name = str(method)
+        if method_name in methods:
+            methods[method_name](lmbda, mx, u_j, u_jp1)
+        else:
+            raise Exception("Method %s not implemented" % method_name)
 
         # Boundary conditions
         u_jp1[0] = 0;
@@ -64,15 +70,7 @@ def solve_PDE(u_I, kappa, L, T, mx, mt, method):
 
         # Save u_j at time t[j+1]
         u_j[:] = u_jp1[:]
-
-    # Plot the final result and exact solution
-    pl.plot(x, u_j, 'ro', label='num')
-    xx = np.linspace(0, L, 250)
-    pl.plot(xx, u_exact(xx, T), 'b-', label='exact')
-    pl.xlabel('x')
-    pl.ylabel('u(x,0.5)')
-    pl.legend(loc='upper right')
-    pl.show()
+    plot(x, u_j, L, T)
 
 
 def fw(lmbda, mx, u_j, u_jp1):
@@ -96,6 +94,17 @@ def ck(lmbda, mx, u_j, u_jp1):
     B_CN = scipy.sparse.diags(diagonals, [-1, 0, 1], format='csc')
     u_jp1[1:] = spsolve(A_CN, B_CN * u_j[1:])
     return u_jp1[1:]
+
+
+def plot(x, u_j, L, T):
+    # Plot the final result and exact solution
+    pl.plot(x, u_j, 'ro', label='num')
+    xx = np.linspace(0, L, 250)
+    pl.plot(xx, u_exact(xx, T), 'b-', label='exact')
+    pl.xlabel('x')
+    pl.ylabel('u(x,0.5)')
+    pl.legend(loc='upper right')
+    pl.show()
 
 
 solve_PDE(u_I, 1, 1, 0.5, 10, 1000, 'fw')
