@@ -75,24 +75,24 @@ def solve_PDE(u_I, kappa, L, T, mx, mt, method):
 
 def fw(lmbda, mx, u_j, u_jp1):
     diagonals = [[lmbda] * (mx - 1), [1 - 2 * lmbda] * mx, [lmbda] * (mx - 1)]
-    A_FE = scipy.sparse.diags(diagonals, [-1, 0, 1]).toarray()
-    u_jp1[1:] = np.dot(A_FE, u_j[1:])
+    A_FW = scipy.sparse.diags(diagonals, [-1, 0, 1]).toarray()
+    u_jp1[1:] = np.dot(A_FW, u_j[1:])
     return u_jp1[1:]
 
 
 def bw(lmbda, mx, u_j, u_jp1):
     diagonals = [[- lmbda] * (mx - 1), [1 + 2 * lmbda] * mx, [- lmbda] * (mx - 1)]
-    A_BE = scipy.sparse.diags(diagonals, [-1, 0, 1], format='csc')
-    u_jp1[1:] = spsolve(A_BE, u_j[1:])
+    A_BW = scipy.sparse.diags(diagonals, [-1, 0, 1], format='csc')
+    u_jp1[1:] = spsolve(A_BW, u_j[1:])
     return u_jp1[1:]
 
 
 def ck(lmbda, mx, u_j, u_jp1):
     diagonals = [[-lmbda / 2] * (mx - 1), [1 + lmbda] * mx, [-lmbda / 2] * (mx - 1)]
-    A_CN = scipy.sparse.diags(diagonals, [-1, 0, 1], format='csc')
+    A_CK = scipy.sparse.diags(diagonals, [-1, 0, 1], format='csc')
     diagonals = [[lmbda / 2] * (mx - 1), [1 - lmbda] * mx, [lmbda / 2] * (mx - 1)]
-    B_CN = scipy.sparse.diags(diagonals, [-1, 0, 1], format='csc')
-    u_jp1[1:] = spsolve(A_CN, B_CN * u_j[1:])
+    B_CK = scipy.sparse.diags(diagonals, [-1, 0, 1], format='csc')
+    u_jp1[1:] = spsolve(A_CK, B_CK * u_j[1:])
     return u_jp1[1:]
 
 
@@ -107,4 +107,4 @@ def plot(x, u_j, L, T):
     pl.show()
 
 
-solve_PDE(u_I, 1, 1, 0.5, 10, 1000, 'fw')
+solve_PDE(u_I, 1, 1, 0.5, 10, 1000, 'ck')
