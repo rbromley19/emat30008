@@ -29,9 +29,7 @@ T  : float
 
     U0 = np.append(u0, T)
     orbit = fsolve(lambda U, f: num_shoot(U, f, var), U0, f)
-    T = orbit[-1]
-    u0 = orbit[:-1]
-    return u0, T
+    return orbit
 
 
 # Shooting function, implements the equation u0 - F(u0, T)
@@ -55,35 +53,11 @@ g : array
 
     u0 = U[:-1]
     T = U[-1]
-    G_sol = abs(u0 - G(f, u0, 0, T))
     phase = conditions(f, u0, var)
-    g = np.append((G_sol), phase)
+    integ_sol = solve_ode(f, u0, [0, T], 'rk4', 0.01)
+    diff = abs(u0 - integ_sol[-1])
+    g = np.append((diff), phase)
     return g
-
-
-# Function to solve the system of odes f
-def G(f, u0, t0, T):
-    """Solves the ODE using the 4th order Runge-kutta method
-
-Parameters
-----------
-f   : function
-     Function of given ODE(s) that returns the derivative at f(t, x)
-u0  : array
-     ODE initial conditions
-t0  : float
-     ODE initial time variabale
-T   : integer
-     Time period
-
-Returns
--------
-sol[-1] : array
-         Solution of ODE
-"""
-
-    sol = solve_ode(f, u0, [t0, T], 'rk4', 0.01)
-    return np.array(sol[-1])
 
 
 # Function to calculate phase condition using d[var]/dt(0) of a system of odes f
@@ -113,17 +87,19 @@ if __name__ == '__main__':
     u0 = [0.2, 0.3]
     T = 22
     var = 0
-    u0, T = orbit_calc(lambda t, u: predator_prey(t, u, b=0.2), u0, T, var)
+    # u0, T = orbit_calc(lambda t, u: predator_prey(t, u, b=0.2), u0, T, var)
+    sol = orbit_calc(predator_prey, u0, T, var)
+    print(sol)
+    u0 = sol[:-1]
+    T = sol[-1]
     # print(u0, T)
     # u0 = [0.2, 0.3]
     # T = 22
     # var = 0
     # sol = orbit_calc(lambda t, u: predator_prey(t, u, b=0.25), u0, T, var)
-    print(u0, T)
     t = np.linspace(0, T, 101)
-    sol = solve_ode(lambda t, u: predator_prey(t, u, b=0.25), u0, t, 'rk4', 0.01)
+    sol = solve_ode(predator_prey, u0, t, 'rk4', 0.01)
     t = np.linspace(0, T, 101)
-    print(sol)
     x = sol[:, 0]
     y = sol[:, 1]
     plt.plot(x, y)
