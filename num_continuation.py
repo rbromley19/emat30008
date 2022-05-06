@@ -1,28 +1,43 @@
 from ode_functions import cubic, hopf_normal, hopf_mod
 import numpy as np
 from scipy.optimize import fsolve
+from numerical_shooting import orbit_calc, num_shoot
 
 
-def natural_continuation(f, x0, param0, a, b, space, discretisation, solver):
+# def hopf_2(t, u, b):
+#     u1, u2 = u
+#     du1 = b * u1 - u2 - u1 * (u1 ** 2 + u2 ** 2)
+#     du2 = u1 + b * u2 - u2 * (u1 ** 2 + u2 ** 2)
+#     return np.array([du1, du2])
 
-    params = np.linspace(a, b, space)
-    sol_array = []
-    param0 = [param0]
 
+def natural_continuation(f, u0, par, vary_par, range, space, discretisation):
+    params = np.linspace(range[0], range[1], space)
+    result = []
+    counter = 0
     for i in params:
-        param0[0] = i
-        x0 = np.array(solver(discretisation(f), x0, args=param0))
-        sol_array.append(x0)
-    sol_array = np.array(sol_array)
-    return params, sol_array
+        counter = counter + 1
+        print(counter)
+        par[vary_par] = i
+        if discretisation == 'num_shoot':
+            sol = fsolve(lambda U, f: discretisation(U, f, var=0), u0, f)
+            result.append(sol)
+        else:
+            sol = fsolve(lambda U, f: discretisation(f), u0, f)
+        result.append(sol)
+    result = np.array(result)
+    return result
 
 
 def cubic_natural():
-    params, sol_array = natural_continuation(cubic, 1.5, 2, -2, 2, 101, lambda x: x, fsolve)
-    print(params, sol_array)
+    # params, sol_array = natural_continuation(cubic, [1], -2, 0, -2, 2, 30, lambda x: x, fsolve)
+    result = natural_continuation(cubic, 1.5, [2], 0, (-2, 2), 30, lambda x: x)
+    print(result)
+
 
 def hopf_natural():
-    # params, sol_array = param_continuation(hopf_normal, )
+    pass
+
 
 if __name__ == '__main__':
     cubic_natural()
