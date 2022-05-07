@@ -88,16 +88,15 @@ x1 : float
 """
 
     if method == "euler":
-        func = euler_step
+        method = euler_step
     elif method == "rk4":
-        func = rk4_step
+        method = rk4_step
 
-    steps = math.floor((t2 - t1) / dt_max)
-    for i in range(steps):
-        x1, t1 = func(f, x1, t1, dt_max, *args)
-    if t1 != t2:
+    while t1 + dt_max < t2:
+        x1, t1 = method(f, x1, t1, dt_max, *args)
+    else:
         h = t2 - t1
-        x1, t1 = func(f, x1, t1, h, *args)
+        x1, t1 = method(f, x1, t1, h, *args)
     return x1
 
 
@@ -127,8 +126,11 @@ x : array
     if method in methods:
         x = np.zeros((len(t), len(x0)))
         x[0] = x0
-        for i in range(1, len(t)):
-                    x[i] = solve_to(method, f, x[i - 1], t[i - 1], t[i], dt_max, *args)
+        if callable(f):
+            for i in range(1, len(t)):
+                x[i] = solve_to(method, f, x[i - 1], t[i - 1], t[i], dt_max, *args)
+        else:
+            raise Exception("ODE %f must be a function" % f)
     else:
         raise Exception("Method %s not implemented" % method)
     return x
