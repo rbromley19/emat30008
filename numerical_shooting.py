@@ -26,9 +26,11 @@ u0 : array
 T  : float
     Time period of orbit
 """
-
+    if callable(f):
     # U0 = np.append(u0, T)
-    orbit = fsolve(lambda U, f: num_shoot(U, f, var, *args), u0, f)
+        orbit = fsolve(lambda U, f: num_shoot(U, f, var, *args), u0, f)
+    else:
+        raise Exception("Input function %f is not a function" %f)
     return orbit
 
 
@@ -82,11 +84,11 @@ phase_cond : array
 
 
 if __name__ == '__main__':
-    u0 = [0.2, 0.3]
+    u0 = [0.2, 0.3, 22]
     T = 22
     var = 0
     # u0, T = orbit_calc(lambda t, u: predator_prey(t, u, b=0.2), u0, T, var)
-    sol = orbit_calc(predator_prey, u0, T, var)
+    sol = orbit_calc(predator_prey, u0, var)
     print(sol)
     u0 = sol[:-1]
     T = sol[-1]
