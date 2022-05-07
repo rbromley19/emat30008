@@ -123,12 +123,14 @@ Returns
 x : array
     Array of x-values calculated from each t-value
 """
-
-    x = np.zeros((len(t), len(x0)))
-    x[0] = x0
-
-    for i in range(1, len(t)):
-        x[i] = solve_to(method, f, x[i - 1], t[i - 1], t[i], dt_max, *args)
+    methods = {'euler', 'rk4'}
+    if method in methods:
+        x = np.zeros((len(t), len(x0)))
+        x[0] = x0
+        for i in range(1, len(t)):
+                    x[i] = solve_to(method, f, x[i - 1], t[i - 1], t[i], dt_max, *args)
+    else:
+        raise Exception("Method %s not implemented" % method)
     return x
 
 
