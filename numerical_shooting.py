@@ -27,14 +27,12 @@ T  : float
     Time period of orbit
 """
     if callable(f):
-    # U0 = np.append(u0, T)
         orbit = fsolve(lambda U, f: num_shoot(U, f, var, *args), u0, f)
     else:
-        raise Exception("Input function %f is not a function" %f)
+        raise Exception("Input function %f is not a function" % f)
     return orbit
 
 
-# Shooting function, implements the equation u0 - F(u0, T)
 def num_shoot(U, f, var, *args):
     """Implements numerical shooting by calculating u0 - G(u0, T) and the phase conditions
 
@@ -52,12 +50,20 @@ Returns
 g : array
     System of equations of the boundary value problem to be solved
 """
-    u0 = U[:-1]
-    T = U[-1]
-    phase = conditions(f, u0, var, *args)
+    if isinstance(U, np.ndarray):
+        u0 = U[:-1]
+        T = U[-1]
+    else:
+        raise Exception("Initial conditions %U must be a list" % U)
+    if isinstance(var, int):
+        phase = conditions(f, u0, var, *args)
+    else:
+        raise Exception("Phase variable %var must be an integer" % var)
     integ_sol = solve_ode(f, u0, [0, T], 'rk4', 0.01, *args)
-    diff = abs(u0 - integ_sol[-1])
+    # print(integ_sol)
+    diff = (u0 - integ_sol[:, -1])
     g = np.append((diff), phase)
+    # print(g)
     return g
 
 
@@ -81,26 +87,3 @@ phase_cond : array
 """
     phase_cond = np.array([f(0, u0, *args)[var]])
     return phase_cond
-
-
-if __name__ == '__main__':
-    u0 = [0.2, 0.3, 22]
-    T = 22
-    var = 0
-    # u0, T = orbit_calc(lambda t, u: predator_prey(t, u, b=0.2), u0, T, var)
-    sol = orbit_calc(predator_prey, u0, var)
-    print(sol)
-    u0 = sol[:-1]
-    T = sol[-1]
-    # print(u0, T)
-    # u0 = [0.2, 0.3]
-    # T = 22
-    # var = 0
-    # sol = orbit_calc(lambda t, u: predator_prey(t, u, b=0.25), u0, T, var)
-    t = np.linspace(0, T, 101)
-    sol = solve_ode(predator_prey, u0, t, 'rk4', 0.01)
-    t = np.linspace(0, T, 101)
-    x = sol[:, 0]
-    y = sol[:, 1]
-    plt.plot(x, y)
-    plt.show()

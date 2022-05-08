@@ -1,6 +1,22 @@
 from numerical_shooting import orbit_calc
 import numpy as np
-from ode_functions import hopf_bf, hopf_exp, ode_3, ode_3_exp
+from ode_functions import hopf_bf, hopf_exp, ode_3, ode_3_exp, predator_prey
+from integrate_ode import solve_ode
+import matplotlib.pyplot as plt
+
+
+def predator_prey_shooting():
+    shoot_result = orbit_calc(predator_prey, [0.2, 0.3, 22], var=0)
+    x, y = shoot_result[:-1]
+    T = shoot_result[-1]
+    solve_t = np.linspace(0, T, 100)
+    realsol = solve_ode(predator_prey, [x, y], solve_t, 'rk4', 0.01)
+    orbit_x = realsol[0]
+    orbit_y = realsol[1]
+    plt.plot(orbit_x, orbit_y, 'g', label="Actual Orbit")
+    plt.plot(x, y, 'rx', label='Shooting Result')
+    plt.legend()
+    plt.show()
 
 
 # fix this function line 12
@@ -40,7 +56,8 @@ def shooting_test(function, u0, phase, function_exp):
 
 
 if __name__ == '__main__':
-    shooting_test(lambda t, u: hopf_bf(t, u, b=1), [1, 1.5, 5], 0, 'hopf_exp')
+    # shooting_test(lambda t, u: hopf_bf(t, u, b=1), [1, 1.5, 5], 0, 'hopf_exp')
+    predator_prey_shooting()
     # hopf_test(1, [1, 1.5, 5], 0, 0)
     # b = 1
     # s = -1
