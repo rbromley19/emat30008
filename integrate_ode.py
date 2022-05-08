@@ -127,13 +127,16 @@ x : array
         x = np.zeros((len(t), len(x0)))
         x[0] = x0
         if callable(f):
-            for i in range(1, len(t)):
-                x[i] = solve_to(method, f, x[i - 1], t[i - 1], t[i], dt_max, *args)
+            for i in range(len(t) - 1):
+                x[i+1] = solve_to(method, f, x[i], t[i], t[i+1], dt_max, *args)
         else:
             raise Exception("ODE %f must be a function" % f)
     else:
         raise Exception("Method %s not implemented" % method)
-    return x
+    solution = np.zeros((len(x0), len(t)))
+    for i in range(len(x0)):
+        solution[i] = [item[i] for item in x]
+    return solution
 
 
 def rk4_run(f, t):
@@ -147,5 +150,5 @@ def rk4_run(f, t):
 if __name__ == '__main__':
     f = ode_1
     true_sol = math.e
-    t = [0, 1]
+    t = np.linspace(0, 1, 100)
     rk4_run(f, t)
