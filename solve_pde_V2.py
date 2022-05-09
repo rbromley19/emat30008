@@ -12,7 +12,6 @@ import scipy
 from scipy.sparse.linalg import spsolve
 
 
-
 def u_I(x):
     # initial temperature distribution
     y = np.sin(pi * x / L)
@@ -25,13 +24,13 @@ def u_exact(x, t):
     return y
 
 
-def calc_PDE(u_I, kappa, L, T, method):
+def calc_PDE(u_I, kappa, L, T, method, bc='zero'):
     x, lmbda, mx, mt = environment(L, T, kappa)
     u_j, u_jp1 = sol_vars(x)
     # Set initial condition
     for i in range(0, mx + 1):
         u_j[i] = u_I(x[i])
-    u_j = solve_PDE(lmbda, mx, mt, u_j, u_jp1, method)
+    u_j = solve_PDE(lmbda, mx, mt, u_j, u_jp1, method, bc)
     plot(x, u_j, L, T)
 
 
@@ -51,13 +50,15 @@ def environment(L, T, kappa):
     print("lambda=", lmbda)
     return x, lmbda, mx, mt
 
+
 def sol_vars(x):
     # Set up the solution variables
     u_j = np.zeros(x.size)  # u at current time step
     u_jp1 = np.zeros(x.size)  # u at next time step
     return u_j, u_jp1
 
-def solve_PDE(lmbda, mx, mt, u_j, u_jp1, method):
+
+def solve_PDE(lmbda, mx, mt, u_j, u_jp1, method, bc):
     # Solve the PDE: loop over all time points
     for j in range(0, mt):
         # Forward Euler timestep at inner mesh points
@@ -71,12 +72,21 @@ def solve_PDE(lmbda, mx, mt, u_j, u_jp1, method):
             raise Exception("Method %s not implemented" % method_name)
 
         # Boundary conditions
-        u_jp1[0] = 0;
-        u_jp1[mx] = 0
+        u_jp1 = bound_conds(bc, u_jp1, mx)
 
         # Save u_j at time t[j+1]
         u_j[:] = u_jp1[:]
     return u_j
+
+
+def bound_conds(bc, u_jp1, mx):
+    if bc == 'zero':
+        u_jp1[0] = 0
+        u_jp1[mx] = 0
+    elif bc == 'dirichlet':
+        pass
+        # dir_vec =
+    return u_jp1
 
 
 
@@ -113,10 +123,18 @@ def plot(x, u_j, L, T):
     pl.legend(loc='upper right')
     pl.show()
 
+
+def p_cond():
+    return 2
+
+
+def q_cond():
+    return 3
+
+
 # Set problem parameters/functions
 kappa = 1.0  # diffusion constant
 L = 1.0  # length of spatial domain
 T = 0.5  # total time to solve for
 
-# solve_PDE(u_I, 1, 1, 0.5, 10, 1000, 'ck')
-calc_PDE(u_I, kappa, L, T, 'fw')
+calc_PDE(u_I, kappa, L, T, 'ck')
