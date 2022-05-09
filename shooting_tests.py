@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 
 def predator_prey_shooting():
     shoot_result = orbit_calc(predator_prey, [0.2, 0.3, 22], var=0)
+    print(shoot_result)
     x, y = shoot_result[:-1]
     T = shoot_result[-1]
     solve_t = np.linspace(0, T, 100)
@@ -24,7 +25,7 @@ def shooting_test(function, u0, phase, function_exp):
     test_result = orbit_calc(function, u0, phase)[:-1]
     T = test_result[-1]
     print(T)
-    exp_result = function_exp(t, theta=T, b=b)
+    exp_result = lamba t, u, b: function_exp(t, theta=T, b=b)
     if np.allclose(exp_result, test_result):
         print("Test" + str(function) + " has successfully passed")
     else:
@@ -56,7 +57,7 @@ def shooting_test(function, u0, phase, function_exp):
 
 
 if __name__ == '__main__':
-    # shooting_test(lambda t, u: hopf_bf(t, u, b=1), [1, 1.5, 5], 0, 'hopf_exp')
+    shooting_test(hopf_bf, [1, 1.5, 5], 0, 'hopf_exp')
     predator_prey_shooting()
     # hopf_test(1, [1, 1.5, 5], 0, 0)
     # b = 1
