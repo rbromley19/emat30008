@@ -47,6 +47,44 @@ Plot of 1-step ODE integrator errors
     plt.show()
     plt.savefig('eulererror.png')
 
+    # h_val = np.logspace(-4, -1, 50)
+    # for method in methods:
+    #     method_list = np.zeros(int(len(h_val)))
+    #     for i in range(len(h_val)):
+    #         method_sol = solve_ode(f, x0, t, method, h_val[i])
+    #         method_sol = np.ndarray.tolist(method_sol)
+    #         method_sol_flat = []
+    #         for sublist in method_sol:
+    #             for item in sublist:
+    #                 method_sol_flat.append(item)
+    #         method_sol = method_sol_flat
+    #         error = abs(method_sol[-1] - true_sol)
+    #         method_list[i] = error
+    #     plt.plot(h_val, method_list)
+    # plt.legend(methods, loc='best')
+    # plt.yscale('log')
+    # plt.xscale('log')
+    # plt.xlabel('Timestep')
+    # plt.ylabel('Error')
+    # plt.show()
+    # plt.savefig('eulererror.png')
+
+
+def sol_plot(f, methods):
+    x0 = [1]
+    t = np.linspace(0, 1, 10)
+    dt_max = 0.01
+    for method in methods:
+        if method == 'analytic':
+            sol = np.exp(t)
+        else:
+            sol = list(solve_ode(f, x0, t, method, dt_max).flat)
+        plt.plot(t, sol)
+    plt.legend(methods, loc='best')
+    plt.xlabel('t')
+    plt.ylabel('x(t)')
+    plt.show()
+
 
 # This needs to be moved to future euler test
 def euler_run(f, t):
@@ -54,7 +92,6 @@ def euler_run(f, t):
     x0 = [1]
     dt_max = 0.01
     euler = solve_ode(f, x0, t, method, dt_max)[-1]
-    # print('Euler approximation = ' + str(euler))
 
 
 # This needs to be moved to future rk4 test
@@ -63,13 +100,11 @@ def rk4_run(f, t):
     x0 = [1]
     dt_max = 0.01
     rk4 = solve_ode(f, x0, t, method, dt_max)[-1]
-    # print('Runge-kutta approximation = ' + str(rk4))
 
 
 if __name__ == '__main__':
     f = ode_1
     true_sol = math.e
     t = [0, 1]
-    euler_run(f, t)
-    rk4_run(f, t)
     error_plot(f, [1], t, true_sol, ['euler', 'rk4'])
+    sol_plot(f, true_sol, ['euler', 'rk4', 'analytic'])
