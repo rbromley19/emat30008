@@ -92,6 +92,7 @@ x1 : float
     elif method == "rk4":
         method = rk4_step
 
+    # print(t1, t2)
     while t1 + dt_max < t2:
         x1, t1 = method(f, x1, t1, dt_max, *args)
     else:
@@ -101,7 +102,7 @@ x1 : float
 
 
 # Function to generate results from integration
-def solve_ode(f, x0, t, method, dt_max, *args):
+def solve_ode(f, x0, t, method, dt_max, array=False, *args):
     """Generates and returns the solution estimates from integration
 
 Parameters
@@ -124,19 +125,32 @@ x : array
 """
     methods = {'euler', 'rk4'}
     if method in methods:
+        # print('t here')
+        # print(t)
+        # print('x0 here')
+        # print(x0)
+        print(type(t))
         x = np.zeros((len(t), len(x0)))
         x[0] = x0
+        # print('x[0] here')
+        # print(x[0])
+        # print(x)
         if callable(f):
             for i in range(len(t) - 1):
                 x[i+1] = solve_to(method, f, x[i], t[i], t[i+1], dt_max, *args)
+                # print(x[i+1])
         else:
             raise Exception("ODE %f must be a function" % f)
     else:
         raise Exception("Method %s not implemented" % method)
     solution = np.zeros((len(x0), len(t)))
+    sol_array = solution
     for i in range(len(x0)):
         solution[i] = [item[i] for item in x]
-    return solution
+    if array is True:
+        return sol_array
+    else:
+        return solution
 
 
 def rk4_run(f, t):
@@ -150,5 +164,5 @@ def rk4_run(f, t):
 if __name__ == '__main__':
     f = ode_1
     true_sol = math.e
-    t = np.linspace(0, 1, 100)
+    t = np.linspace(0, 1, 10)
     rk4_run(f, t)
