@@ -4,60 +4,13 @@
 #   u=0 at x=0,L, t>0
 # and prescribed initial temperature
 #   u=u_I(x) 0<=x<=L,t=0
+
 import numpy as np
 import pylab as pl
 from math import pi
 import scipy
 from scipy.sparse.linalg import spsolve
 
-# Set problem parameters/functions
-kappa = 1.0  # diffusion constant
-L = 1.0  # length of spatial domain
-T = 0.5  # total time to solve for
-
-
-def calc_PDE(L, T, kappa, method, mx=10, mt=1000):
-    if isinstance(mx, mt, kappa, float):
-        return env_variables(L, T, mx, mt, kappa)
-    else:
-        raise Exception('gridpoints in space/time need to be floats')
-    # Set initial condition
-    for i in range(0, mx + 1):
-        u_j[i] = u_I(x[i])
-    methods = {'fw': fw, 'bw': bw, 'ck': ck}
-    method = str(method)
-    if method in methods:
-        solve_PDE(mt, method, methods, lmbda, mx, u_j, u_jp1)
-    else:
-        raise Exception("Method %s not implemented" % method)
-
-
-
-def env_variables(L, T, kappa, mx=10, mt=1000):
-    # Set numerical parameters
-    x = np.linspace(0, L, mx + 1)  # mesh points in space
-    t = np.linspace(0, T, mt + 1)  # mesh points in time
-    deltax = x[1] - x[0]  # gridspacing in x
-    deltat = t[1] - t[0]  # gridspacing in t
-    # Set up the solution variables
-    u_j = np.zeros(x.size)  # u at current time step
-    u_jp1 = np.zeros(x.size)  # u at next time step
-    lmbda = kappa * deltat / (deltax ** 2)  # mesh fourier number
-    return x, t, deltax, deltat, u_j, u_jp1, lmbda
-
-
-def solve_PDE(mt, method, methods, lmbda, mx, u_j, u_jp1):
-    # Solve the PDE: loop over all time points
-    for j in range(0, mt):
-        methods[method](lmbda, mx, u_j, u_jp1)
-
-        # Boundary conditions
-        u_jp1[0] = 0;
-        u_jp1[mx] = 0
-
-        # Save u_j at time t[j+1]
-        u_j[:] = u_jp1[:]
-    return u_j
 
 
 def u_I(x):
@@ -72,7 +25,17 @@ def u_exact(x, t):
     return y
 
 
-def solve_PDE(u_I, kappa, L, T, mx, mt, method):
+def calc_PDE(u_I, kappa, L, T, method):
+    x, lmbda, mx, mt = environment(L, T, kappa)
+    u_j, u_jp1 = sol_vars(x)
+    # Set initial condition
+    for i in range(0, mx + 1):
+        u_j[i] = u_I(x[i])
+    u_j = solve_PDE(lmbda, mx, mt, u_j, u_jp1, method)
+    plot(x, u_j, L, T)
+
+
+def environment(L, T, kappa):
     # Set numerical parameters
     mx = 10  # number of gridpoints in space
     mt = 1000  # number of gridpoints in time
@@ -86,14 +49,15 @@ def solve_PDE(u_I, kappa, L, T, mx, mt, method):
     print("deltax=", deltax)
     print("deltat=", deltat)
     print("lambda=", lmbda)
+    return x, lmbda, mx, mt
+
+def sol_vars(x):
     # Set up the solution variables
     u_j = np.zeros(x.size)  # u at current time step
     u_jp1 = np.zeros(x.size)  # u at next time step
+    return u_j, u_jp1
 
-    # Set initial condition
-    for i in range(0, mx + 1):
-        u_j[i] = u_I(x[i])
-
+def solve_PDE(lmbda, mx, mt, u_j, u_jp1, method):
     # Solve the PDE: loop over all time points
     for j in range(0, mt):
         # Forward Euler timestep at inner mesh points
@@ -112,34 +76,8 @@ def solve_PDE(u_I, kappa, L, T, mx, mt, method):
 
         # Save u_j at time t[j+1]
         u_j[:] = u_jp1[:]
-    plot(x, u_j, L, T)
+    return u_j
 
-
-def int_conds(mx, u_j, x):
-    for i in range(0, mx + 1):
-        u_j[i] = u_I(x[i])
-    return u_j[i]
-
-
-def solve_PDE(method, mt, lmbda, mx, u_j, u_jp1, x):
-    for j in range(0, mt):
-        # Forward Euler timestep at inner mesh points
-        # PDE discretised at position x[i], time t[j]
-        # Check input method is valid, execute if so
-        methods = {'fw': fw, 'bw': bw, 'ck': ck}
-        method_name = str(method)
-        if method_name in methods:
-            methods[method_name](lmbda, mx, u_j, u_jp1)
-        else:
-            raise Exception("Method %s not implemented" % method_name)
-
-        # Boundary conditions
-        u_jp1[0] = 0;
-        u_jp1[mx] = 0
-
-        # Save u_j at time t[j+1]
-        u_j[:] = u_jp1[:]
-    plot(x, u_j, L, T)
 
 
 def fw(lmbda, mx, u_j, u_jp1):
@@ -175,6 +113,10 @@ def plot(x, u_j, L, T):
     pl.legend(loc='upper right')
     pl.show()
 
+# Set problem parameters/functions
+kappa = 1.0  # diffusion constant
+L = 1.0  # length of spatial domain
+T = 0.5  # total time to solve for
 
-if __name__ == '__main__':
-    solve_PDE(u_I, 1, 1, 0.5, 10, 1000, 'fw')
+# solve_PDE(u_I, 1, 1, 0.5, 10, 1000, 'ck')
+calc_PDE(u_I, kappa, L, T, 'fw')
