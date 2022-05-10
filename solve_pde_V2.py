@@ -24,17 +24,21 @@ def u_exact(x, t):
     return y
 
 
-def calc_PDE(u_I, kappa, L, T, method, bc='zero'):
-    x, lmbda, mx, mt = environment(L, T, kappa)
+def calc_PDE(u_I, kappa, L, T, method, bound_funcs, bc):
+    x, lmbda, mx, mt = init_params(L, T, kappa)
     u_j, u_jp1 = sol_vars(x)
+
     # Set initial condition
     for i in range(0, mx + 1):
         u_j[i] = u_I(x[i])
-    u_j = solve_PDE(lmbda, mx, mt, u_j, u_jp1, method, bc)
+    u_j[0] = 0
+    u_j[mx] = 0
+    u_j = solve_PDE(lmbda, mx, u_j, mt, method, bound_funcs, x, bc)
+    print(u_j)
     plot(x, u_j, L, T)
 
 
-def environment(L, T, kappa):
+def init_params(L, T, kappa):
     # Set numerical parameters
     mx = 10  # number of gridpoints in space
     mt = 1000  # number of gridpoints in time
@@ -58,43 +62,48 @@ def sol_vars(x):
     return u_j, u_jp1
 
 
-def solve_PDE(lmbda, mx, mt, u_j, u_jp1, method, bc):
+def solve_PDE(lmbda, mx, u_j, mt, method, bound_funcs, x, bc):
     # Solve the PDE: loop over all time points
-    for j in range(0, mt):
-        # Forward Euler timestep at inner mesh points
-        # PDE discretised at position x[i], time t[j]
-        # Check input method is valid, execute if so
-        methods = {'fw': fw, 'bw': bw, 'ck': ck}
-        method_name = str(method)
-        if method_name in methods:
-            methods[method_name](lmbda, mx, u_j, u_jp1)
-        else:
-            raise Exception("Method %s not implemented" % method_name)
+    methods = {'fw': fw, 'bw': bw, 'ck': ck}
+    method_name = str(method)
+    if method_name in methods:
+        u_j = methods[method_name](lmbda, mx, u_j, mt, bound_funcs, bc)
+    else:
+        raise Exception("Method %s not implemented" % method_name)
 
-        # Boundary conditions
-        u_jp1 = bound_conds(bc, u_jp1, mx)
+    print(x, u_j)
+    return x, u_j
 
-        # Save u_j at time t[j+1]
-        u_j[:] = u_jp1[:]
+
+def fw(lmbda, mx, u_j, mt, bound_funcs, bc):
+    # diagonals = [[lmbda] * (mx - 1), [1 - 2 * lmbda] * mx, [lmbda] * (mx - 1)]
+    # A_FW = scipy.sparse.diags(diagonals, [-1, 0, 1]).toarray()
+    n = np.around(mx - 1)
+    diagonals = np.array([lmbda * np.ones(n - 1), np.ones(n) - 2 * lmbda, lmbda * np.ones(n - 1)], dtype=np.dtype(object))
+    A_FW = scipy.sparse.diags(diagonals, [-1, 0, 1]).toarray()
+    for i in range(mt):
+        if bc == 'zero':
+            u_j = np.dot(A_FW, u_j[1:])
+            # u_jp1[1:] = np.dot(A_FW, u_j[1:])
+        u_j0 = u_j[1:mx]
+        if bc == 'dirichlet':
+            u_j = calc_diri(u_j0, A_FW, lmbda, mt, bound_funcs)
+
     return u_j
 
 
-def bound_conds(bc, u_jp1, mx):
-    if bc == 'zero':
-        u_jp1[0] = 0
-        u_jp1[mx] = 0
-    elif bc == 'dirichlet':
-        pass
-        # dir_vec =
-    return u_jp1
-
-
-
-def fw(lmbda, mx, u_j, u_jp1):
-    diagonals = [[lmbda] * (mx - 1), [1 - 2 * lmbda] * mx, [lmbda] * (mx - 1)]
-    A_FW = scipy.sparse.diags(diagonals, [-1, 0, 1]).toarray()
-    u_jp1[1:] = np.dot(A_FW, u_j[1:])
-    return u_jp1[1:]
+def calc_diri(u_j0, A_FW, lmbda, mt, bound_funcs):
+    sol_vec = np.zeros(len(u_j0))
+    p, q = bound_funcs
+    sol_vec[0] = p(mt)
+    sol_vec[-1] = q(mt)
+    sol = A_FW.dot(u_j0) + lmbda * np.array(sol_vec)
+    # Add boundary values
+    u_j = [p(mt)]
+    for i in sol:
+        u_j.append(i)
+    u_j.append(q(mt))
+    return u_j
 
 
 def bw(lmbda, mx, u_j, u_jp1):
@@ -115,21 +124,22 @@ def ck(lmbda, mx, u_j, u_jp1):
 
 def plot(x, u_j, L, T):
     # Plot the final result and exact solution
-    pl.plot(x, u_j, 'ro', label='num')
+    print(u_j)
+    pl.plot(x, u_j[1], 'ro', label='num')
     xx = np.linspace(0, L, 250)
-    pl.plot(xx, u_exact(xx, T), 'b-', label='exact')
+    # pl.plot(xx, u_exact(xx, T), 'b-', label='exact')
     pl.xlabel('x')
     pl.ylabel('u(x,0.5)')
     pl.legend(loc='upper right')
     pl.show()
 
 
-def p_cond():
-    return 2
+def p_func(t):
+    return t
 
 
-def q_cond():
-    return 3
+def q_func(t):
+    return t
 
 
 # Set problem parameters/functions
@@ -137,4 +147,4 @@ kappa = 1.0  # diffusion constant
 L = 1.0  # length of spatial domain
 T = 0.5  # total time to solve for
 
-calc_PDE(u_I, kappa, L, T, 'ck')
+calc_PDE(u_I, kappa, L, T, 'fw', (p_func, q_func), 'dirichlet')
