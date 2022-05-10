@@ -2,6 +2,7 @@ from ode_functions import cubic, hopf_normal, hopf_mod
 import numpy as np
 from scipy.optimize import fsolve
 from numerical_shooting import orbit_calc, num_shoot
+import matplotlib.pyplot as plt
 
 
 def natural_continuation(f, u0, par, vary_par, range, space, discretisation):
@@ -11,9 +12,16 @@ def natural_continuation(f, u0, par, vary_par, range, space, discretisation):
     for i in params:
         counter = counter + 1
         print(counter)
-        par[vary_par] = i
+        print(i)
         sol = fsolve(lambda U, f: discretisation(U, f, i), u0, f)
+        u0 = sol
         result.append(sol)
+        u0 = np.round(u0, 5)
+        print(sol)
+    result = np.array(result)
+    print(result)
+    plt.plot(params, [u[0] for u in result])
+    plt.show()
     result = np.array(result)
     print(result)
     return result

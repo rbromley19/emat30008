@@ -1,7 +1,7 @@
 from integrate_ode import solve_ode
 import numpy as np
 import matplotlib.pyplot as plt
-from ode_functions import ode_1, f_s, X_analytic
+from ode_functions import ode_1, f_s, x_analytic
 import math
 
 
@@ -86,6 +86,20 @@ def sol_plot(f, methods):
     plt.show()
 
 
+def system_sol_plot(f, methods):
+    x0 = [1, 0]
+    t = np.linspace(0, 50, 1000)
+    dt_max = 0.01
+    sol = list(solve_ode(f, x0, t, 'rk4', dt_max).flat)
+    print(sol)
+    print(sol[0])
+    print('--------------------------------------------------')
+    print(sol[1])
+    # xdot = sol[:,1]
+    # plt.plot(xdot, x)
+    # plt.show()
+
+
 # This needs to be moved to future euler test
 def euler_run(f, t):
     method = 'euler'
@@ -107,4 +121,5 @@ if __name__ == '__main__':
     true_sol = math.e
     t = [0, 1]
     error_plot(f, [1], t, true_sol, ['euler', 'rk4'])
-    sol_plot(f, true_sol, ['euler', 'rk4', 'analytic'])
+    sol_plot(f, ['euler', 'rk4', 'analytic'])
+    system_sol_plot(f_s, ['euler', 'rk4'])

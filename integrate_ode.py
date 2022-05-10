@@ -1,6 +1,6 @@
 import numpy as np
 import math
-from ode_functions import ode_1, f_s, X_analytic
+from ode_functions import ode_1, f_s, x_analytic
 
 
 # Function to calculate each step for euler integration method
@@ -102,7 +102,7 @@ x1 : float
 
 
 # Function to generate results from integration
-def solve_ode(f, x0, t, method, dt_max, array=False, *args):
+def solve_ode(f, x0, t, method, dt_max, *args):
     """Generates and returns the solution estimates from integration
 
 Parameters
@@ -129,7 +129,6 @@ x : array
         # print(t)
         # print('x0 here')
         # print(x0)
-        print(type(t))
         x = np.zeros((len(t), len(x0)))
         x[0] = x0
         # print('x[0] here')
@@ -144,13 +143,9 @@ x : array
     else:
         raise Exception("Method %s not implemented" % method)
     solution = np.zeros((len(x0), len(t)))
-    sol_array = solution
     for i in range(len(x0)):
         solution[i] = [item[i] for item in x]
-    if array is True:
-        return sol_array
-    else:
-        return solution
+    return solution
 
 
 def rk4_run(f, t):
