@@ -8,7 +8,10 @@ import matplotlib.pyplot as plt
 def predator_prey_shooting():
     shoot_result = orbit_calc(predator_prey, [0.2, 0.3, 22], var=0)
     x, y = shoot_result[:-1]
+    print(x, y)
     T = shoot_result[-1]
+    print('Calculated Predator-Prey coordinates using numerical shooting: ' + str(x) + ', ' + str(y))
+    print('Calculated Predator-Prey time period using numerical shooting: ' + str(T))
     solve_t = np.linspace(0, T, 100)
     realsol = solve_ode(predator_prey, [x, y], solve_t, 'rk4', 0.01)
     orbit_x = realsol[0]
@@ -21,6 +24,7 @@ def predator_prey_shooting():
 
 # Function to test Hopf bifurcation shooting result against explicit solution
 def hopf_test(function, u0, phase):
+    print('--------- Now running the Hopf bifurcation normal-form shooting tests (suitable inputs) ---------')
     test_result = orbit_calc(function, u0, var=phase)
     T = test_result[-1]
     u0 = test_result[:-1]
@@ -64,6 +68,7 @@ def hopf_test(function, u0, phase):
 
 
 def du3_shoot_test(function, u0, phase):
+    print('--------- Now running the 3-D system shooting tests (suitable inputs) ---------')
     test_result = orbit_calc(ode_3, u0, var=phase)
     print(test_result)
     T = test_result[-1]
@@ -107,32 +112,6 @@ def du3_shoot_test(function, u0, phase):
     print('Tests failed: ' + str(fail_count))
 
 
-
-# Function to test 3-d system shooting result against explicit solution
-# def du3_test(b, s, u0, phase0, t):
-#     shoot_result = orbit_calc(lambda t, u: ode_3(t, u, b=b, s=s), u0, phase0)
-#     shoot_points = shoot_result[:-1]
-#     T = shoot_result[-1]
-#     exp_result = ode_3_exp(t, theta=T, b=b)
-#     if np.allclose(exp_result, shoot_points):
-#         print("pass")
-#     else:
-#         print("fail")
-
-
 if __name__ == '__main__':
-    print('--------- Now running the Hopf bifurcation normal-form shooting tests (suitable inputs)---------')
     hopf_test(hopf_bf, [1, 1, 6], 0)
-    # predator_prey_shooting()
-    print('--------- Now running the 3-dimension Hopf shooting tests (suitable inputs)---------')
     du3_shoot_test(ode_3, [-1, -1, 0, 6], 0)
-    print('--------- Now running the Hopf bifurcation normal-form shooting tests (unsuitable initial conditions)---------')
-    hopf_test(hopf_bf, [0], 0)
-    hopf_test(1, 1, 0)
-    # b = 1
-    # s = -1
-    # u0 = [1.5, 0.5, 1]
-    # T0 = 5
-    # phase0 = 0
-    # du3_test(1, -1, [1.5, 0.5, 1, 5], 0, 0)
-    # du3_test(1, -1, [-1, 0, 1, 6], 0, 0)

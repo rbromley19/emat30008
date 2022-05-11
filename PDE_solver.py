@@ -13,6 +13,8 @@ def calc_PDE(u_I, kappa, L, T, method, bound, bc):
     u_j[0] = 0
     u_j[mx] = 0
     u_j = solve_PDE(lmbda, mx, u_j, mt, method, bound, x, bc)
+    print(type(u_j))
+    print(type(x))
     return x, u_j
 
 
@@ -36,6 +38,7 @@ def init_params(L, T, kappa):
 def sol_vars(x):
     # Set up the solution variables
     u_j = np.zeros(x.size)  # u at current time step
+    print(type(u_j))
     u_jp1 = np.zeros(x.size)  # u at next time step
     return u_j, u_jp1
 
@@ -83,6 +86,8 @@ def dirichlet(lmbda, u_j0, mt, bound, A_FW):
     for i in sol_arr:
         u_j.append(i)
     u_j.append(q(mt))
+    print('dirichlet')
+    print(type(u_j))
     return u_j
 
 

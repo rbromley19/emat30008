@@ -5,10 +5,10 @@ from num_continuation import natural_continuation
 
 
 def cubic_natural():
-    natural_continuation(cubic, 1.5, (-2, 2), 30, lambda U, f, par: f(U, par), 'Cubic', 'x')
+    natural_continuation(cubic, 1.5, (-2, 2), 30, lambda U, f, par: f(U, par), 'Cubic', 'c')
 
 
-def hopf_natural():
+def hopf_norm():
     natural_continuation(hopf_normal, [0.1, 0.5, 6], (2, 0), 30, lambda U, f, par: num_shoot(U, f, 0, par), 'Hopf Normal', 'Beta')
 
 
@@ -18,6 +18,6 @@ def hopf_modif():
 
 if __name__ == '__main__':
     cubic_natural()
-    hopf_natural()
+    hopf_norm()
     hopf_modif()
 

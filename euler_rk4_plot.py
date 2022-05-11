@@ -47,28 +47,6 @@ Plot of 1-step ODE integrator errors
     plt.show()
     plt.savefig('eulererror.png')
 
-    # h_val = np.logspace(-4, -1, 50)
-    # for method in methods:
-    #     method_list = np.zeros(int(len(h_val)))
-    #     for i in range(len(h_val)):
-    #         method_sol = solve_ode(f, x0, t, method, h_val[i])
-    #         method_sol = np.ndarray.tolist(method_sol)
-    #         method_sol_flat = []
-    #         for sublist in method_sol:
-    #             for item in sublist:
-    #                 method_sol_flat.append(item)
-    #         method_sol = method_sol_flat
-    #         error = abs(method_sol[-1] - true_sol)
-    #         method_list[i] = error
-    #     plt.plot(h_val, method_list)
-    # plt.legend(methods, loc='best')
-    # plt.yscale('log')
-    # plt.xscale('log')
-    # plt.xlabel('Timestep')
-    # plt.ylabel('Error')
-    # plt.show()
-    # plt.savefig('eulererror.png')
-
 
 def sol_plot(f, methods):
     x0 = [1]

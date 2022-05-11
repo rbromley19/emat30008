@@ -1,4 +1,5 @@
 import numpy as np
+from math import pi
 
 
 # Function to simulate ODE x. = x
@@ -44,7 +45,7 @@ Array of dx/dt and dy/dt
 
 
 # Function to simulate analytic solution to f_s
-def X_analytic(t, X0):
+def x_analytic(t, X0):
     """Function to simulate the analytic solution to f_s
 
 Parameters
@@ -59,12 +60,12 @@ Returns
 Array of the analytic solution to f_s
 """
 
-    c2, c1 = X0
-    return [c1 * np.sin(t) + c2 * np.cos(t), c1 * np.cos(t) - c2 * np.sin(t)]
+    a, b = X0
+    return [a * np.sin(t) + b * np.cos(t), a * np.cos(t) - b * np.sin(t)]
 
 
 # Function to simulate predator-prey equations
-def predator_prey(t, u, b):
+def predator_prey(t, u, b=0.26):
     """Function to simulate the predator-prey (Lokterra-Volterra Equations)
 
 Parameters
@@ -79,10 +80,8 @@ Returns
 -------
 Array of dx/dt and dy/dt
 """
-
     a = 1
     d = 0.1
-    b = 0.2
     x, y = u
     dx = x * (1 - x) - (a * x * y) / (d + x)
     dy = b * y * (1 - (y / x))
@@ -90,7 +89,7 @@ Array of dx/dt and dy/dt
 
 
 # Function to simulate Hopf bifurcation normal form
-def hopf_bf(t, u, b):
+def hopf_bf(t, u, b=1):
     """Function to simulate the Hopf bifurcation normal form
 
 Parameters
@@ -136,7 +135,7 @@ Array of u1 and u2
 
 
 # Function to simulate third order system of ODEs (eq. 3 in code testing)
-def ode_3(t, u, b, s):
+def ode_3(t, u, b=1):
     """Function to simulate the third order system of ODEs (eq. 3 in code testing)
 
 Parameters
@@ -154,7 +153,7 @@ Returns
 -------
 Array of du1/dt, du2/dt and du3/dt
 """
-
+    s = -1
     u1, u2, u3 = u
     du1 = b * u1 - u2 + s * u1 * (u1 ** 2 + u2 ** 2)
     du2 = u1 + b * u2 + s * u2 * (u1 ** 2 + u2 ** 2)
@@ -246,4 +245,10 @@ Returns
     u1, u2 = u
     du1 = b * u1 - u2 + u1 * (u1 ** 2 + u2 ** 2) - u1 * (u1 ** 2 + u2 ** 2) ** 2
     du2 = u1 + b * u2 + u2 * (u1 ** 2 + u2 ** 2) - u2 * (u1 ** 2 + u2 ** 2) ** 2
+    return np.array([du1, du2])
+
+
+
+
+
 

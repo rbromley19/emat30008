@@ -1,4 +1,5 @@
-from integrate_ode import solve_ode
+# from integrate_ode import solve_ode
+from oldintegrate import solve_ode
 import numpy as np
 from scipy.optimize import fsolve
 from ode_functions import predator_prey
@@ -60,10 +61,8 @@ g : array
     else:
         raise Exception("Phase variable %var must be an integer" % var)
     integ_sol = solve_ode(f, u0, [0, T], 'rk4', 0.01, *args)
-    # print(integ_sol)
     diff = (u0 - integ_sol[:, -1])
     g = np.append((diff), phase)
-    # print(g)
     return g
 
 
@@ -87,3 +86,5 @@ phase_cond : array
 """
     phase_cond = np.array([f(0, u0, *args)[var]])
     return phase_cond
+
+

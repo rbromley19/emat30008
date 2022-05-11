@@ -125,15 +125,8 @@ x : array
 """
     methods = {'euler', 'rk4'}
     if method in methods:
-        # print('t here')
-        # print(t)
-        # print('x0 here')
-        # print(x0)
         x = np.zeros((len(t), len(x0)))
         x[0] = x0
-        # print('x[0] here')
-        # print(x[0])
-        # print(x)
         if callable(f):
             for i in range(len(t) - 1):
                 x[i+1] = solve_to(method, f, x[i], t[i], t[i+1], dt_max, *args)

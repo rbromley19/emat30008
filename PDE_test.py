@@ -1,4 +1,4 @@
-from solve_pde_V2 import calc_PDE
+from PDE_solver import calc_PDE
 from math import pi
 import numpy as np
 import pylab as pl
