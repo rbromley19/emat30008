@@ -5,21 +5,8 @@ from numerical_shooting import orbit_calc
 from ode_functions import predator_prey
 
 
+# Predator-Prey equation for b<0.26
 def predator_prey_below(t, u, b=0.22):
-    """Function to simulate the predator-prey (Lokterra-Volterra Equations) with b<0.26
-
-Parameters
-----------
-t  : float
-     Time
-u  : array
-     x-value at time t
-b  : float
-     value of constant 'b'
-Returns
--------
-Array of dx/dt and dy/dt
-"""
     a = 1
     d = 0.1
     x, y = u
@@ -28,21 +15,8 @@ Array of dx/dt and dy/dt
     return np.array((dx, dy))
 
 
+# Predator-Prey equation for b>0.26
 def predator_prey_above(t, u, b=0.3):
-    """Function to simulate the predator-prey (Lokterra-Volterra Equations) with b>0.26
-
-Parameters
-----------
-t  : float
-     Time
-u  : array
-     x-value at time t
-b  : float
-     value of constant 'b'
-Returns
--------
-Array of dx/dt and dy/dt
-"""
     a = 1
     d = 0.1
     x, y = u
@@ -51,6 +25,7 @@ Array of dx/dt and dy/dt
     return np.array((dx, dy))
 
 
+# Function plots
 def simulate_plot(f):
     t = np.linspace(0, 200, 1000)
     x0 = [0.24, 0.24]
@@ -63,6 +38,7 @@ def simulate_plot(f):
     plt.show()
 
 
+# Predator-Prey shooting example
 def predator_prey_shooting():
     shoot_result = orbit_calc(predator_prey, [0.2, 0.3, 22], var=0)
     [x, y] = shoot_result[:-1]
@@ -80,6 +56,7 @@ def predator_prey_shooting():
     plt.title('Periodic Orbit calculated using Numerical Shooting')
     plt.legend()
     plt.show()
+
 
 if __name__ == '__main__':
     # Simulate Predator-Prey for b<0.26

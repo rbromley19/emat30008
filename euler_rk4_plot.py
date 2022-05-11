@@ -69,16 +69,8 @@ def system_sol_plot(f, methods):
     t = np.linspace(0, 50, 1000)
     dt_max = 0.01
     sol = list(solve_ode(f, x0, t, 'rk4', dt_max).flat)
-    print(sol)
-    print(sol[0])
-    print('--------------------------------------------------')
-    print(sol[1])
-    # xdot = sol[:,1]
-    # plt.plot(xdot, x)
-    # plt.show()
 
 
-# This needs to be moved to future euler test
 def euler_run(f, t):
     method = 'euler'
     x0 = [1]
@@ -86,7 +78,6 @@ def euler_run(f, t):
     euler = solve_ode(f, x0, t, method, dt_max)[-1]
 
 
-# This needs to be moved to future rk4 test
 def rk4_run(f, t):
     method = 'rk4'
     x0 = [1]

@@ -92,7 +92,6 @@ x1 : float
     elif method == "rk4":
         method = rk4_step
 
-    # print(t1, t2)
     while t1 + dt_max < t2:
         x1, t1 = method(f, x1, t1, dt_max, *args)
     else:

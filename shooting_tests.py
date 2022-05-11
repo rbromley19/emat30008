@@ -2,24 +2,6 @@ from numerical_shooting import orbit_calc
 import numpy as np
 from ode_functions import hopf_bf, hopf_exp, ode_3, ode_3_exp, predator_prey, ode_1
 from integrate_ode import solve_ode
-import matplotlib.pyplot as plt
-
-
-def predator_prey_shooting():
-    shoot_result = orbit_calc(predator_prey, [0.2, 0.3, 22], var=0)
-    x, y = shoot_result[:-1]
-    print(x, y)
-    T = shoot_result[-1]
-    print('Calculated Predator-Prey coordinates using numerical shooting: ' + str(x) + ', ' + str(y))
-    print('Calculated Predator-Prey time period using numerical shooting: ' + str(T))
-    solve_t = np.linspace(0, T, 100)
-    realsol = solve_ode(predator_prey, [x, y], solve_t, 'rk4', 0.01)
-    orbit_x = realsol[0]
-    orbit_y = realsol[1]
-    plt.plot(orbit_x, orbit_y, 'g', label="Actual Orbit")
-    plt.plot(x, y, 'rx', label='Shooting Result')
-    plt.legend()
-    plt.show()
 
 
 # Function to test Hopf bifurcation shooting result against explicit solution

@@ -1,7 +1,5 @@
-from ode_functions import cubic, hopf_normal, hopf_mod
 import numpy as np
 from scipy.optimize import fsolve
-from numerical_shooting import orbit_calc, num_shoot
 import matplotlib.pyplot as plt
 
 
