@@ -1,9 +1,6 @@
-# from integrate_ode import solve_ode
 from oldintegrate import solve_ode
 import numpy as np
 from scipy.optimize import fsolve
-from ode_functions import predator_prey
-import matplotlib.pyplot as plt
 
 
 def orbit_calc(f, u0, var, *args):
